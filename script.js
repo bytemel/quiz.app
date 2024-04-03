@@ -2,6 +2,7 @@ const questionElement = document.getElementById("question");
 const answerButtons = document.getElementById("answer-buttons");
 const nextButton = document.getElementById("next-button");
 const resultElement = document.getElementById("result");
+const restartButton = document.getElementById("restart-button");
 
 let currentQuestionIndex = 0;
 let score = 0;
@@ -135,77 +136,83 @@ const questions = [
     },
   ];
 
-  setNextQuestion();
+ setNextQuestion();
 
   nextButton.addEventListener("click", () => {
-    const selectedButton = document.querySelector(".btn.selected");
-    if (!selectedButton) {
-      return alert("Please select an answer!");
-    }
+      const selectedButton = document.querySelector(".btn.selected");
+      if (!selectedButton) {
+          return alert("Please select an answer!");
+      }
   
-    const isCorrect = selectedButton.dataset.correct === "true";
-    if (isCorrect) {
-      score++;
-    }
+      const isCorrect = selectedButton.dataset.correct === "true";
+      if (isCorrect) {
+          score++;
+      }
   
-    selectedButton.classList.remove("selected");
+      selectedButton.classList.remove("selected");
   
-    showFeedback(isCorrect);
+      showFeedback(isCorrect);
   
-    currentQuestionIndex++;
-    if (currentQuestionIndex < questions.length) {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+          setNextQuestion();
+      } else {
+          endQuiz();
+      }
+  });
+  
+  restartButton.addEventListener("click", () => {
+      currentQuestionIndex = 0;
+      score = 0;
       setNextQuestion();
-    } else {
-      endQuiz();
-    }
   });
   
   function setNextQuestion() {
-    resetState();
-    showQuestion(questions[currentQuestionIndex]);
+      resetState();
+      showQuestion(questions[currentQuestionIndex]);
   }
   
   function showQuestion(question) {
-    questionElement.innerText = question.question;
-    question.choices.forEach((choice) => {
-      const button = document.createElement("button");
-      button.innerText = choice.text;
-      button.classList.add("btn");
-      if (choice.answer) {
-        button.dataset.correct = "true";
-      }
-      button.addEventListener("click", () => selectAnswer(button));
-      answerButtons.appendChild(button);
-    });
-    nextButton.style.display = "block";
+      questionElement.innerText = question.question;
+      question.choices.forEach((choice) => {
+          const button = document.createElement("button");
+          button.innerText = choice.text;
+          button.classList.add("btn");
+          if (choice.answer) {
+              button.dataset.correct = "true";
+          }
+          button.addEventListener("click", () => selectAnswer(button));
+          answerButtons.appendChild(button);
+      });
+      nextButton.style.display = "block";
   }
   
   function resetState() {
-    while (answerButtons.firstChild) {
-      answerButtons.removeChild(answerButtons.firstChild);
-    }
-    nextButton.style.display = "none";
-    resultElement.innerText = "";
+      while (answerButtons.firstChild) {
+          answerButtons.removeChild(answerButtons.firstChild);
+      }
+      nextButton.style.display = "none";
+      resultElement.innerText = "";
   }
   
   function selectAnswer(selectedButton) {
-    const buttons = document.querySelectorAll(".btn");
-    buttons.forEach((button) => {
-      button.classList.remove("selected");
-    });
-    selectedButton.classList.add("selected");
+      const buttons = document.querySelectorAll(".btn");
+      buttons.forEach((button) => {
+          button.classList.remove("selected");
+      });
+      selectedButton.classList.add("selected");
   }
   
   function showFeedback(isCorrect) {
-    if (isCorrect) {
-      resultElement.innerText = "Correct!";
-    } else {
-      resultElement.innerText = "Incorrect!";
-    }
+      if (isCorrect) {
+          resultElement.innerText = "Correct!";
+      } else {
+          resultElement.innerText = "Incorrect!";
+      }
   }
   
   function endQuiz() {
-    const percentageScore = (score / questions.length) * 100;
-    resultElement.innerText = `Quiz completed! Your score is ${score} out of ${questions.length}, which is ${percentageScore.toFixed(2)}%`;
-    nextButton.style.display = "none";
+      const percentageScore = (score / questions.length) * 100;
+      resultElement.innerText = `Quiz completed! Your score is ${score} out of ${questions.length}, which is ${percentageScore.toFixed(2)}%`;
+      nextButton.style.display = "none";
   }
